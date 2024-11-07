@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.susanafigueroa.mediacaptureapp.R
+import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -35,14 +36,25 @@ fun CameraScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
-    
-    AndroidView(factory = )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
+        AndroidView(
+            factory = {contextFactory ->
+                val previewView = PreviewView(contextFactory)
+
+                coroutineScope.launch {
+                    startCamera(context, previewView, lifecycleOwner)
+                }
+                previewView
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
