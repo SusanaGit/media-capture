@@ -11,6 +11,13 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,11 +46,14 @@ import com.susanafigueroa.mediacaptureapp.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 private data class CameraUseCases(
     val imageCapture: ImageCapture,
+    val videoCapture: VideoCapture<Recorder>
 )
 
 @Composable
@@ -55,6 +65,9 @@ fun CameraScreen(
     val coroutineScope = rememberCoroutineScope()
 
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
+    var videoCapture by remember { mutableStateOf<VideoCapture<Recorder>?>(null) }
+    var recording by remember { mutableStateOf<Recording?>(null) }
+    val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
 
     Box(
         modifier = Modifier
@@ -69,6 +82,7 @@ fun CameraScreen(
                 coroutineScope.launch {
                     val cameraProvider = startCamera(context, previewView, lifecycleOwner)
                     imageCapture = cameraProvider.imageCapture
+                    videoCapture = cameraProvider.videoCapture
                 }
                 previewView
             },
@@ -91,6 +105,15 @@ fun CameraScreen(
 
             Button(onClick = {
 
+                videoCapture?.let {
+
+                    if (recording == null) {
+                        recording = recordVideo(it, context)
+                    } else {
+                        recording?.stop()
+                        recording = null
+                    }
+                }
             }) {
                 Text(stringResource(R.string.record_a_video))
             }
@@ -99,12 +122,47 @@ fun CameraScreen(
     }
 }
 
+fun recordVideo(
+    videoCapture: VideoCapture<Recorder>,
+    context: Context
+): Recording? {
+    val videoName = SimpleDateFormat(context.getString(R.string.dateformat), Locale.UK)
+        .format(System.currentTimeMillis())
+
+    val valuesVideo = ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, videoName)
+        put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/CameraX-Video")
+        }
+    }
+
+    val mediaStoreOutputOptions = MediaStoreOutputOptions.Builder(
+        context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+    ).setContentValues(valuesVideo).build()
+
+    return videoCapture.output.prepareRecording(context, mediaStoreOutputOptions)
+        .start(ContextCompat.getMainExecutor(context)) { event ->
+            when (event) {
+                is VideoRecordEvent.Start -> {
+                    Toast.makeText(context,
+                        context.getString(R.string.recording_started), Toast.LENGTH_SHORT).show()
+                }
+                is VideoRecordEvent.Finalize -> {
+                    val msg =
+                        context.getString(R.string.video_saved_to, event.outputResults.outputUri)
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+}
+
 fun takePhoto(
     imageCapture: ImageCapture?,
     context: Context
 ) {
 
-    val photoName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.UK)
+    val photoName = SimpleDateFormat(context.getString(R.string.dateformat), Locale.UK)
         .format(System.currentTimeMillis())
 
     val valuesPhoto = ContentValues().apply {
@@ -152,13 +210,18 @@ private suspend fun startCamera(
 
     val imageCapture = ImageCapture.Builder().build()
 
+    val recorder = Recorder.Builder()
+        .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+        .build()
+    val videoCapture = VideoCapture.withOutput(recorder)
+
     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     cameraProvider.unbindAll()
 
-    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
+    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture, videoCapture)
 
-    return CameraUseCases(imageCapture)
+    return CameraUseCases(imageCapture, videoCapture)
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider =
