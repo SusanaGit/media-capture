@@ -27,6 +27,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.susanafigueroa.mediacaptureapp.R
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -80,10 +82,12 @@ fun CameraScreen(
 
 @Composable
 fun TakePhoto(
-    imageCapture: ImageCapture?,
+    imageCapture: ImageCapture?
 ) {
     val imageCapture = imageCapture ?: return
 
+    val name = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.UK)
+        .format(System.currentTimeMillis())
 }
 
 private suspend fun startCamera(
