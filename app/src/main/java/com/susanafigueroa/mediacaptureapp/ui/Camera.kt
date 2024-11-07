@@ -4,9 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
-import android.provider.MediaStore.Audio.Media
+import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -19,7 +21,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +42,10 @@ import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+private data class CameraUseCases(
+    val imageCapture: ImageCapture,
+)
+
 @Composable
 fun CameraScreen(
 ) {
@@ -43,6 +53,8 @@ fun CameraScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
+
+    var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
 
     Box(
         modifier = Modifier
@@ -55,7 +67,8 @@ fun CameraScreen(
                 val previewView = PreviewView(contextFactory)
 
                 coroutineScope.launch {
-                    startCamera(context, previewView, lifecycleOwner)
+                    val cameraProvider = startCamera(context, previewView, lifecycleOwner)
+                    imageCapture = cameraProvider.imageCapture
                 }
                 previewView
             },
@@ -69,6 +82,8 @@ fun CameraScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = {
+
+                imageCapture?.let { takePhoto(imageCapture = it, context = context) }
 
             }) {
                 Text(stringResource(R.string.take_a_photo))
@@ -84,12 +99,10 @@ fun CameraScreen(
     }
 }
 
-@Composable
-fun TakePhoto(
+fun takePhoto(
     imageCapture: ImageCapture?,
     context: Context
 ) {
-    val imageCapture = imageCapture ?: return
 
     val photoName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.UK)
         .format(System.currentTimeMillis())
@@ -107,25 +120,45 @@ fun TakePhoto(
         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
         valuesPhoto
     ).build()
+
+    imageCapture?.takePicture(
+        outputOptions,
+        ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageSavedCallback {
+            override fun onError(exc: ImageCaptureException) {
+                Toast.makeText(context,
+                    context.getString(R.string.photo_capture_failed, exc.message), Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                val msg = context.getString(R.string.photo_capture_succeeded, output.savedUri)
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                Log.d("TakePhoto", msg)
+            }
+        }
+    )
 }
 
 private suspend fun startCamera(
     context: Context,
     previewView: PreviewView,
     lifecycleOwner: LifecycleOwner
-) {
+): CameraUseCases {
     val cameraProvider = context.getCameraProvider()
 
     val preview = Preview.Builder().build().apply {
         setSurfaceProvider(previewView.surfaceProvider)
     }
 
+    val imageCapture = ImageCapture.Builder().build()
+
     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     cameraProvider.unbindAll()
 
-    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
+    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
 
+    return CameraUseCases(imageCapture)
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider =

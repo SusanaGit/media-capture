@@ -7,4 +7,6 @@
     <string name="accept_the_permissions_to_continue">Accept the permissions to continue</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="record_a_video">Record a video</string>
+    <string name="photo_capture_failed">Photo capture failed: %1$s</string>
+    <string name="photo_capture_succeeded">Photo capture succeeded: %1$s</string>
 </resources>
