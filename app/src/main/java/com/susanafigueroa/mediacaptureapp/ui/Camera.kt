@@ -1,6 +1,10 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
+import android.content.ContentValues
 import android.content.Context
+import android.os.Build
+import android.provider.MediaStore
+import android.provider.MediaStore.Audio.Media
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
@@ -86,8 +90,16 @@ fun TakePhoto(
 ) {
     val imageCapture = imageCapture ?: return
 
-    val name = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.UK)
+    val photoName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.UK)
         .format(System.currentTimeMillis())
+
+    val valuesPhoto = ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, photoName)
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+        }
+    }
 }
 
 private suspend fun startCamera(
