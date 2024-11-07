@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 
@@ -20,10 +21,11 @@ enum class MediaCaptureScreen(@StringRes val title: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaCaptureAppBar(
+    currentScreen: MediaCaptureScreen,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(stringResource(id = R.string.app_name)) },
+        title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
@@ -35,7 +37,7 @@ fun MediaCaptureApp(
 ) {
     Scaffold(
         topBar = {
-            MediaCaptureAppBar() }
+            MediaCaptureAppBar( currentScreen = currentScreen) }
     ) { innerPadding ->
     }
 }
