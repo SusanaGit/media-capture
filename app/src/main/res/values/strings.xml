@@ -3,4 +3,6 @@
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
     <string name="player">Player</string>
+    <string name="permissions_not_granted_by_the_user">Permissions not granted by the user.</string>
+    <string name="accept_the_permissions_to_continue">Accept the permissions to continue</string>
 </resources>
