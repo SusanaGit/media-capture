@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -108,8 +109,8 @@ fun MediaCaptureBottomBar(
             },
             icon = {
                 Icon(
-                    Icons.Default.Face,
-                    contentDescription = R.string.camera.toString()
+                    painter = painterResource(id = R.drawable.baseline_camera_24),
+                    contentDescription = stringResource(id = R.string.camera)
                 )
             }
         )
@@ -121,8 +122,8 @@ fun MediaCaptureBottomBar(
             },
             icon = {
                 Icon(
-                    Icons.Default.Face,
-                    contentDescription = R.string.gallery.toString()
+                    painter = painterResource(id = R.drawable.baseline_local_library_24),
+                    contentDescription = stringResource(id = R.string.gallery)
                 )
             }
         )
@@ -134,8 +135,8 @@ fun MediaCaptureBottomBar(
             },
             icon = {
                 Icon(
-                    Icons.Default.Face,
-                    contentDescription = R.string.player.toString()
+                    painter = painterResource(id = R.drawable.baseline_play_circle_outline_24),
+                    contentDescription = stringResource(id = R.string.player)
                 )
             }
         )
