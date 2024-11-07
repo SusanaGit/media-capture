@@ -86,7 +86,8 @@ fun CameraScreen(
 
 @Composable
 fun TakePhoto(
-    imageCapture: ImageCapture?
+    imageCapture: ImageCapture?,
+    context: Context
 ) {
     val imageCapture = imageCapture ?: return
 
@@ -100,6 +101,12 @@ fun TakePhoto(
             put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
         }
     }
+
+    val outputOptions = ImageCapture.OutputFileOptions.Builder(
+        context.contentResolver,
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        valuesPhoto
+    ).build()
 }
 
 private suspend fun startCamera(
