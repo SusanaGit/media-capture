@@ -66,6 +66,8 @@ private suspend fun startCamera(
 
     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
+    cameraProvider.unbindAll()
+
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider =
