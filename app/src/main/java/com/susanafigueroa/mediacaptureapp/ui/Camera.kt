@@ -2,6 +2,7 @@ package com.susanafigueroa.mediacaptureapp.ui
 
 import android.content.Context
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -75,6 +76,14 @@ fun CameraScreen(
 
         }
     }
+}
+
+@Composable
+fun TakePhoto(
+    imageCapture: ImageCapture?,
+) {
+    val imageCapture = imageCapture ?: return
+
 }
 
 private suspend fun startCamera(
