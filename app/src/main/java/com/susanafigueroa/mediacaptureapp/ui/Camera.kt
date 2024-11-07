@@ -1,6 +1,7 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
 import android.content.Context
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -62,6 +63,8 @@ private suspend fun startCamera(
     val preview = Preview.Builder().build().apply {
         setSurfaceProvider(previewView.surfaceProvider)
     }
+
+    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
 }
 
