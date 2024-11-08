@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -46,8 +45,6 @@ import com.susanafigueroa.mediacaptureapp.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -67,7 +64,6 @@ fun CameraScreen(
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var videoCapture by remember { mutableStateOf<VideoCapture<Recorder>?>(null) }
     var recording by remember { mutableStateOf<Recording?>(null) }
-    val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
 
     Box(
         modifier = Modifier
@@ -134,9 +130,10 @@ fun recordVideo(
 
     val valuesVideo = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, videoName)
-        put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+        put(MediaStore.MediaColumns.MIME_TYPE, context.getString(R.string.video_mp4))
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/CameraX-Video")
+            put(MediaStore.Video.Media.RELATIVE_PATH,
+                context.getString(R.string.movies_camerax_video))
         }
     }
 
@@ -170,9 +167,10 @@ fun takePhoto(
 
     val valuesPhoto = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, photoName)
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+        put(MediaStore.MediaColumns.MIME_TYPE, context.getString(R.string.image_jpeg))
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+            put(MediaStore.Images.Media.RELATIVE_PATH,
+                context.getString(R.string.pictures_camerax_image))
         }
     }
 
@@ -194,7 +192,6 @@ fun takePhoto(
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                 val msg = context.getString(R.string.photo_capture_succeeded, output.savedUri)
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                Log.d("TakePhoto", msg)
             }
         }
     )
