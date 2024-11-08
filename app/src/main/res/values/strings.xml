@@ -7,8 +7,8 @@
     <string name="accept_the_permissions_to_continue">Accept the permissions to continue</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="record_a_video">Record a video</string>
-    <string name="photo_capture_failed">Photo capture failed: %1$s</string>
-    <string name="photo_capture_succeeded">Photo capture succeeded: %1$s</string>
+    <string name="photo_capture_failed">Photo capture failed</string>
+    <string name="photo_capture_succeeded">Photo capture succeeded</string>
     <string name="dateformat">yyyy-MM-dd-HH-mm-ss-SSS</string>
     <string name="recording_started">Recording started</string>
     <string name="video_saved_to">Video saved to: %1$s</string>
@@ -17,4 +17,5 @@
     <string name="pictures_camerax_image">Pictures/CameraX-Image</string>
     <string name="movies_camerax_video">Movies/CameraX-Video</string>
     <string name="video_mp4">video/mp4</string>
+    <string name="photo_thumbnail">Photo thumbnail</string>
 </resources>

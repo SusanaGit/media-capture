@@ -2,6 +2,9 @@ package com.susanafigueroa.mediacaptureapp.ui
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
@@ -18,15 +21,20 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +42,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,7 +53,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.susanafigueroa.mediacaptureapp.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.coroutines.resume
@@ -65,6 +78,18 @@ fun CameraScreen(
     var videoCapture by remember { mutableStateOf<VideoCapture<Recorder>?>(null) }
     var recording by remember { mutableStateOf<Recording?>(null) }
 
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val imageBitmap: ImageBitmap? = imageUri?.let { uri ->
+        obtainBitmapFromUri(context, uri)?.asImageBitmap()
+    }
+
+    LaunchedEffect(imageUri) {
+        imageUri?.let {
+            delay(2000)
+            imageUri = null
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -85,6 +110,17 @@ fun CameraScreen(
             modifier = Modifier.fillMaxSize()
         )
 
+        imageBitmap?.let { bitmap ->
+            Image(
+                bitmap = bitmap,
+                contentDescription = stringResource(R.string.photo_thumbnail),
+                modifier = Modifier
+                    .width(200.dp)
+                    .align(Alignment.Center)
+                    .border(4.dp, MaterialTheme.colorScheme.primaryContainer)
+            )
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,7 +129,11 @@ fun CameraScreen(
         ) {
             Button(onClick = {
 
-                imageCapture?.let { takePhoto(imageCapture = it, context = context) }
+                imageCapture?.let {
+                    takePhoto(imageCapture = it, context = context) { uri ->
+                        imageUri = uri
+                    }
+                }
 
             }) {
                 Text(stringResource(R.string.take_a_photo))
@@ -118,6 +158,19 @@ fun CameraScreen(
                 }
             }
         }
+    }
+}
+
+fun obtainBitmapFromUri(
+    context: Context,
+    uri: Uri
+): Bitmap? {
+    return try {
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        BitmapFactory.decodeStream(inputStream)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }
 
@@ -159,7 +212,8 @@ fun recordVideo(
 
 fun takePhoto(
     imageCapture: ImageCapture?,
-    context: Context
+    context: Context,
+    onImageCaptured: (Uri?) -> Unit
 ) {
 
     val photoName = SimpleDateFormat(context.getString(R.string.dateformat), Locale.UK)
@@ -186,11 +240,12 @@ fun takePhoto(
         object : ImageCapture.OnImageSavedCallback {
             override fun onError(exc: ImageCaptureException) {
                 Toast.makeText(context,
-                    context.getString(R.string.photo_capture_failed, exc.message), Toast.LENGTH_SHORT).show()
+                    context.getString(R.string.photo_capture_failed), Toast.LENGTH_SHORT).show()
             }
 
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                val msg = context.getString(R.string.photo_capture_succeeded, output.savedUri)
+                onImageCaptured(output.savedUri)
+                val msg = context.getString(R.string.photo_capture_succeeded)
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             }
         }
