@@ -42,7 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -117,7 +117,7 @@ fun CameraScreen(
                 modifier = Modifier
                     .width(200.dp)
                     .align(Alignment.Center)
-                    .border(4.dp, MaterialTheme.colorScheme.primaryContainer)
+                    .rotate(90f)
             )
         }
 
