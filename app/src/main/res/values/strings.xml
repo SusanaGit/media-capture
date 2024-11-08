@@ -11,11 +11,11 @@
     <string name="photo_capture_succeeded">Photo capture succeeded</string>
     <string name="dateformat">yyyy-MM-dd-HH-mm-ss-SSS</string>
     <string name="recording_started">Recording started</string>
-    <string name="video_saved_to">Video saved to: %1$s</string>
     <string name="stop_recorder">Stop recorder</string>
     <string name="image_jpeg">image/jpeg</string>
     <string name="pictures_camerax_image">Pictures/CameraX-Image</string>
     <string name="movies_camerax_video">Movies/CameraX-Video</string>
     <string name="video_mp4">video/mp4</string>
     <string name="photo_thumbnail">Photo thumbnail</string>
+    <string name="video_recorded">Video recorded</string>
 </resources>

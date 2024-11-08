@@ -4,6 +4,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.media.MediaMetadata
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -22,16 +26,15 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -80,7 +84,11 @@ fun CameraScreen(
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val imageBitmap: ImageBitmap? = imageUri?.let { uri ->
-        obtainBitmapFromUri(context, uri)?.asImageBitmap()
+        if (uri.toString().contains("image")) {
+            obtainBitmapFromUri(context, uri)?.asImageBitmap()
+        } else {
+            obtainBitmapFromVideoUri(context,uri)?.asImageBitmap()
+        }
     }
 
     LaunchedEffect(imageUri) {
@@ -111,13 +119,15 @@ fun CameraScreen(
         )
 
         imageBitmap?.let { bitmap ->
+
             Image(
                 bitmap = bitmap,
                 contentDescription = stringResource(R.string.photo_thumbnail),
                 modifier = Modifier
                     .width(200.dp)
-                    .align(Alignment.Center)
-                    .rotate(90f)
+                    .height(300.dp)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop
             )
         }
 
@@ -144,7 +154,9 @@ fun CameraScreen(
                 videoCapture?.let {
 
                     if (recording == null) {
-                        recording = recordVideo(it, context)
+                        recording = recordVideo(it, context) { uri ->
+                            imageUri = uri
+                        }
                     } else {
                         recording?.stop()
                         recording = null
@@ -161,22 +173,47 @@ fun CameraScreen(
     }
 }
 
+fun obtainBitmapFromVideoUri(
+    context: Context,
+    uri: Uri
+): Bitmap? {
+    var bitmapVideoFrame: Bitmap? = null
+    val dataVideo = MediaMetadataRetriever()
+    try {
+        dataVideo.setDataSource(context, uri)
+        bitmapVideoFrame = dataVideo.getFrameAtTime(0)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    } finally {
+        dataVideo.release()
+    }
+    return bitmapVideoFrame
+}
+
 fun obtainBitmapFromUri(
     context: Context,
     uri: Uri
 ): Bitmap? {
-    return try {
+    var bitmapPhoto: Bitmap? = null
+    try {
         val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-        BitmapFactory.decodeStream(inputStream)
+        bitmapPhoto = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+
+        val matrix = Matrix().apply { postRotate(90f) }
+        bitmapPhoto = Bitmap.createBitmap(bitmapPhoto, 0, 0, bitmapPhoto.width, bitmapPhoto.height, matrix, true)
+
     } catch (e: Exception) {
         e.printStackTrace()
-        null
     }
+    return bitmapPhoto
 }
 
 fun recordVideo(
     videoCapture: VideoCapture<Recorder>,
-    context: Context
+    context: Context,
+    onVideoCapture: (Uri?) -> Unit
 ): Recording? {
     val videoName = SimpleDateFormat(context.getString(R.string.dateformat), Locale.UK)
         .format(System.currentTimeMillis())
@@ -202,9 +239,9 @@ fun recordVideo(
                         context.getString(R.string.recording_started), Toast.LENGTH_SHORT).show()
                 }
                 is VideoRecordEvent.Finalize -> {
-                    val msg =
-                        context.getString(R.string.video_saved_to, event.outputResults.outputUri)
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    onVideoCapture(event.outputResults.outputUri)
+                    Toast.makeText(context,
+                        context.getString(R.string.video_recorded), Toast.LENGTH_SHORT).show()
                 }
             }
         }
