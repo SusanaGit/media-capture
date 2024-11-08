@@ -1,8 +1,6 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -15,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-
 
 @Composable
 fun GalleryScreen(
@@ -36,7 +33,7 @@ fun GalleryScreen(
                         contentDescription = null,
                         modifier = Modifier
                             .width(200.dp)
-                            .height(200.dp)
+                            .height(300.dp)
                             .padding(2.dp),
                         contentScale = ContentScale.Crop
                     )
