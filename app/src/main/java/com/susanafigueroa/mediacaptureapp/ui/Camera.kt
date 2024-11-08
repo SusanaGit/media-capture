@@ -91,6 +91,8 @@ fun CameraScreen(
         }
     }
 
+    var listMedia by remember { mutableStateOf(listOf<Uri>()) }
+
     LaunchedEffect(imageUri) {
         imageUri?.let {
             delay(2000)
@@ -141,7 +143,10 @@ fun CameraScreen(
 
                 imageCapture?.let {
                     takePhoto(imageCapture = it, context = context) { uri ->
-                        imageUri = uri
+                        uri?.let {
+                            imageUri = uri
+                            listMedia = listMedia + uri
+                        }
                     }
                 }
 
@@ -155,7 +160,10 @@ fun CameraScreen(
 
                     if (recording == null) {
                         recording = recordVideo(it, context) { uri ->
-                            imageUri = uri
+                            uri?.let {
+                                imageUri = uri
+                                listMedia = listMedia + uri
+                            }
                         }
                     } else {
                         recording?.stop()
