@@ -61,7 +61,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 private data class CameraUseCases(
     val imageCapture: ImageCapture,
@@ -70,7 +69,7 @@ private data class CameraUseCases(
 
 @Composable
 fun CameraScreen(
-    viewModel: MediaCaptureViewModel = viewModel()
+    viewModel: MediaCaptureViewModel
 ) {
 
     val context = LocalContext.current
@@ -142,7 +141,6 @@ fun CameraScreen(
                     takePhoto(imageCapture = it, context = context) { uri ->
                         uri?.let {
                             imageUri = uri
-                            //listMedia = listMedia + uri
                             viewModel.addMediaItem(uri)
                         }
                     }
@@ -160,7 +158,6 @@ fun CameraScreen(
                         recording = recordVideo(it, context) { uri ->
                             uri?.let {
                                 imageUri = uri
-                                //listMedia = listMedia + uri
                                 viewModel.addMediaItem(uri)
                             }
                         }

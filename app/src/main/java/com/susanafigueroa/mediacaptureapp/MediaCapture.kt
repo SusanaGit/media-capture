@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,8 +24,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.susanafigueroa.mediacaptureapp.ui.CameraScreen
 import com.susanafigueroa.mediacaptureapp.ui.GalleryScreen
+import com.susanafigueroa.mediacaptureapp.ui.MediaCaptureViewModel
 import com.susanafigueroa.mediacaptureapp.ui.PlayerScreen
-
 
 enum class MediaCaptureScreen(@StringRes val title: Int) {
     Gallery(title = R.string.gallery),
@@ -52,6 +53,8 @@ fun MediaCaptureApp(
     navController: NavHostController = rememberNavController()
 ) {
 
+    val viewModel: MediaCaptureViewModel = viewModel()
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = MediaCaptureScreen.valueOf(
         backStackEntry?.destination?.route ?: MediaCaptureScreen.Gallery.name
@@ -76,11 +79,11 @@ fun MediaCaptureApp(
         ) {
 
             composable(route = MediaCaptureScreen.Gallery.name) {
-                //GalleryScreen()
+                GalleryScreen(viewModel)
             }
 
             composable(route = MediaCaptureScreen.Camera.name) {
-                CameraScreen()
+                CameraScreen(viewModel)
             }
 
             composable(route = MediaCaptureScreen.Player.name) {
