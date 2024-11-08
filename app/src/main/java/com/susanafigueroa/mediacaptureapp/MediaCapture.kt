@@ -76,7 +76,7 @@ fun MediaCaptureApp(
         ) {
 
             composable(route = MediaCaptureScreen.Gallery.name) {
-                GalleryScreen()
+                //GalleryScreen()
             }
 
             composable(route = MediaCaptureScreen.Camera.name) {
