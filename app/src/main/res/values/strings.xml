@@ -12,4 +12,5 @@
     <string name="dateformat">yyyy-MM-dd-HH-mm-ss-SSS</string>
     <string name="recording_started">Recording started</string>
     <string name="video_saved_to">Video saved to: %1$s</string>
+    <string name="stop_recorder">Stop recorder</string>
 </resources>

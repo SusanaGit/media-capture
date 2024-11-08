@@ -115,9 +115,12 @@ fun CameraScreen(
                     }
                 }
             }) {
-                Text(stringResource(R.string.record_a_video))
+                if (recording == null ) {
+                    Text(stringResource(R.string.record_a_video))
+                } else {
+                    Text(text = stringResource(R.string.stop_recorder))
+                }
             }
-
         }
     }
 }
