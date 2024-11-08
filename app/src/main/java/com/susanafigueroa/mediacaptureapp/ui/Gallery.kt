@@ -1,7 +1,11 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -9,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 
 
@@ -29,7 +34,11 @@ fun GalleryScreen(
                     Image(
                         bitmap = it,
                         contentDescription = null,
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(200.dp)
+                            .padding(2.dp),
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
