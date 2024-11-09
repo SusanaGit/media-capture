@@ -1,13 +1,15 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.exoplayer2.ExoPlayer
@@ -15,17 +17,25 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun PlayerScreen(
     viewModel: MediaCaptureViewModel
 ) {
 
-    val mediaSelectedUri = viewModel.uiState.value.mediaSelectedUri
+    val uiState by viewModel.uiState.collectAsState()
+    val mediaSelectedUri = uiState.mediaSelectedUri
 
     if (mediaSelectedUri.toString().contains("image")) {
 
-        Text(text = "image")
+        val mediaList = uiState.mediaList
+        val mediaListThumbnail = uiState.mediaListThumbnail
+        val index = mediaList.indexOf(mediaSelectedUri)
+
+        Image(
+            bitmap = mediaListThumbnail[index],
+            contentDescription = "Selected image",
+            contentScale = ContentScale.Crop
+        )
 
     } else if (mediaSelectedUri.toString().contains("video")){
 
@@ -33,17 +43,9 @@ fun PlayerScreen(
 
         val player = remember {
             ExoPlayer.Builder(context).build().apply {
-
-                var mediaItem = MediaItem.fromUri("")
-
-                if (viewModel.uiState.value.mediaSelectedUri != null) {
-                    mediaItem = MediaItem.fromUri(viewModel.uiState.value.mediaSelectedUri!!.toString())
-                }
-
+                val mediaItem = MediaItem.fromUri(mediaSelectedUri.toString())
                 setMediaItem(mediaItem)
-
                 playWhenReady = true
-
                 prepare()
             }
         }
