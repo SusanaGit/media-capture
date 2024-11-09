@@ -18,15 +18,12 @@ class MediaCaptureViewModel : ViewModel() {
         _uiState.value = uiState.value.copy(
             mediaList = uiState.value.mediaList + newMediaItem
         )
-        Log.d("MediaCaptureViewModel", "Quantity items in listMedia: ${_uiState.value.mediaList.size}")
-        Log.d("MediaCaptureViewModel", "Uris in listMedia: ${_uiState.value.mediaList}")
     }
 
     fun addMediaItemThumbnail(newMediaItemThumbnail: ImageBitmap) {
         _uiState.value = uiState.value.copy(
             mediaListThumbnail = uiState.value.mediaListThumbnail + newMediaItemThumbnail
         )
-        Log.d("MediaCaptureViewModel", "Quantity items in mediaListThumbnail: ${_uiState.value.mediaListThumbnail.size}")
     }
 
     fun setMediaSelectedUri(mediaSelectedUri: Uri) {

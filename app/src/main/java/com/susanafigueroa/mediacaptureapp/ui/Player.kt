@@ -1,9 +1,10 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -14,46 +15,54 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun PlayerScreen(
     viewModel: MediaCaptureViewModel
 ) {
 
-    val context = LocalContext.current
+    val mediaSelectedUri = viewModel.uiState.value.mediaSelectedUri
 
-    val player = remember {
-        ExoPlayer.Builder(context).build().apply {
+    if (mediaSelectedUri.toString().contains("image")) {
 
-            Log.d("MediaSelectedUri", viewModel.uiState.value.mediaSelectedUri.toString())
+        Text(text = "image")
 
-            var mediaItem = MediaItem.fromUri("")
+    } else if (mediaSelectedUri.toString().contains("video")){
 
-            if (viewModel.uiState.value.mediaSelectedUri != null) {
-                mediaItem = MediaItem.fromUri(viewModel.uiState.value.mediaSelectedUri!!.toString())
+        val context = LocalContext.current
+
+        val player = remember {
+            ExoPlayer.Builder(context).build().apply {
+
+                var mediaItem = MediaItem.fromUri("")
+
+                if (viewModel.uiState.value.mediaSelectedUri != null) {
+                    mediaItem = MediaItem.fromUri(viewModel.uiState.value.mediaSelectedUri!!.toString())
+                }
+
+                setMediaItem(mediaItem)
+
+                playWhenReady = true
+
+                prepare()
             }
-
-            setMediaItem(mediaItem)
-
-            playWhenReady = true
-
-            prepare()
         }
-    }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        AndroidView(
-            factory = { contextPlayer ->
-            StyledPlayerView(contextPlayer).apply {
-                this.player = player
-                useController = true
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
-            }
-        },
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-        )
+                .fillMaxSize()
+        ) {
+            AndroidView(
+                factory = { contextPlayer ->
+                    StyledPlayerView(contextPlayer).apply {
+                        this.player = player
+                        useController = true
+                        resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
     }
 }
