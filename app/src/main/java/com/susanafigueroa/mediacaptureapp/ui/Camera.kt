@@ -1,5 +1,6 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -91,7 +92,7 @@ fun CameraScreen(
     }
 
     LaunchedEffect(referenceUri) {
-        referenceUri?.let {uri ->
+        referenceUri?.let {
 
             imageBitmap?.let {bitmap ->
                 viewModel.addMediaItemThumbnail(bitmap)
@@ -220,17 +221,19 @@ fun obtainBitmapFromUri(
     return bitmapPhoto?.asImageBitmap()
 }
 
+@SuppressLint("MissingPermission")
 fun recordVideo(
     videoCapture: VideoCapture<Recorder>,
     context: Context,
     onVideoCapture: (Uri?) -> Unit
-): Recording? {
+): Recording {
     val videoName = SimpleDateFormat(context.getString(R.string.dateformat), Locale.UK)
         .format(System.currentTimeMillis())
 
     val valuesVideo = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, videoName)
         put(MediaStore.MediaColumns.MIME_TYPE, context.getString(R.string.video_mp4))
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             put(MediaStore.Video.Media.RELATIVE_PATH,
                 context.getString(R.string.movies_camerax_video))
@@ -241,7 +244,9 @@ fun recordVideo(
         context.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
     ).setContentValues(valuesVideo).build()
 
-    return videoCapture.output.prepareRecording(context, mediaStoreOutputOptions)
+    return videoCapture.output
+        .prepareRecording(context, mediaStoreOutputOptions)
+        .withAudioEnabled()
         .start(ContextCompat.getMainExecutor(context)) { event ->
             when (event) {
                 is VideoRecordEvent.Start -> {
