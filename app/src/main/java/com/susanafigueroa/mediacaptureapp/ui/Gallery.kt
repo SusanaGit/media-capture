@@ -1,7 +1,6 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
 import android.net.Uri
-import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
