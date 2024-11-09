@@ -79,7 +79,7 @@ fun MediaCaptureApp(
         ) {
 
             composable(route = MediaCaptureScreen.Gallery.name) {
-                GalleryScreen(viewModel)
+                GalleryScreen(viewModel, navController = navController)
             }
 
             composable(route = MediaCaptureScreen.Camera.name) {
