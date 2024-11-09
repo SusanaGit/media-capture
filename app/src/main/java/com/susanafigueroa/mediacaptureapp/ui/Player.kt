@@ -1,5 +1,7 @@
 package com.susanafigueroa.mediacaptureapp.ui
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -13,12 +15,21 @@ import com.google.android.exoplayer2.ui.PlayerControlView
 
 @Composable
 fun PlayerScreen(
+    viewModel: MediaCaptureViewModel
 ) {
     val context = LocalContext.current
 
     val player = remember {
         ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri("uri")
+
+            Log.d("MediaSelectedUri", viewModel.uiState.value.mediaSelectedUri.toString())
+
+            var mediaItem = MediaItem.fromUri("")
+
+            if (viewModel.uiState.value.mediaSelectedUri != null) {
+                mediaItem = MediaItem.fromUri(viewModel.uiState.value.mediaSelectedUri!!.toString())
+            }
+
             setMediaItem(mediaItem)
             prepare()
         }

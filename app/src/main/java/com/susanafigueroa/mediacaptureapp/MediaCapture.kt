@@ -87,7 +87,7 @@ fun MediaCaptureApp(
             }
 
             composable(route = MediaCaptureScreen.Player.name) {
-                PlayerScreen()
+                PlayerScreen(viewModel)
             }
         }
 
