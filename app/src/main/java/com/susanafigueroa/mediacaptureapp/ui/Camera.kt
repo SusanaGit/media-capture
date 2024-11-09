@@ -141,7 +141,8 @@ fun CameraScreen(
                 .align(Alignment.BottomCenter),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = {
+            Button(
+                onClick = {
 
                 imageCapture?.let {
                     takePhoto(imageCapture = it, context = context) { uri ->
@@ -152,11 +153,16 @@ fun CameraScreen(
                     }
                 }
 
-            }) {
+            },
+                modifier = Modifier
+                    .padding(5.dp)
+                    .width(150.dp)
+            ) {
                 Text(stringResource(R.string.take_a_photo))
             }
 
-            Button(onClick = {
+            Button(
+                onClick = {
 
                 videoCapture?.let {
 
@@ -172,7 +178,11 @@ fun CameraScreen(
                         recording = null
                     }
                 }
-            }) {
+            },
+                modifier = Modifier
+                    .padding(5.dp)
+                    .width(150.dp)
+            ) {
                 if (recording == null ) {
                     Text(stringResource(R.string.record_a_video))
                 } else {
