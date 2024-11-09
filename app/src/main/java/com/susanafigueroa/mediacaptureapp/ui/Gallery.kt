@@ -35,10 +35,10 @@ fun GalleryScreen(
         columns = GridCells.Adaptive(150.dp),
         modifier = modifier.padding(horizontal = 4.dp)
         ) {
-            itemsIndexed(uiState.mediaListThumbnail) {index, thumbnail ->
+            itemsIndexed(uiState.mediaListImages) {index, image ->
 
                 Image(
-                    bitmap = thumbnail,
+                    bitmap = image,
                     contentDescription = null,
                     modifier = Modifier
                         .width(200.dp)

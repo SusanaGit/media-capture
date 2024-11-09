@@ -28,11 +28,11 @@ fun PlayerScreen(
     if (mediaSelectedUri.toString().contains("image")) {
 
         val mediaList = uiState.mediaList
-        val mediaListThumbnail = uiState.mediaListThumbnail
+        val mediaListImages = uiState.mediaListImages
         val index = mediaList.indexOf(mediaSelectedUri)
 
         Image(
-            bitmap = mediaListThumbnail[index],
+            bitmap = mediaListImages[index],
             contentDescription = "Selected image",
             contentScale = ContentScale.Crop
         )

@@ -95,7 +95,7 @@ fun CameraScreen(
         referenceUri?.let {
 
             imageBitmap?.let {bitmap ->
-                viewModel.addMediaItemThumbnail(bitmap)
+                viewModel.addMediaItemImage(bitmap)
             }
 
             delay(2000)

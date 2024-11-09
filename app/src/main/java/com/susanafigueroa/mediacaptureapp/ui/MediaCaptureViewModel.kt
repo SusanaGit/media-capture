@@ -20,9 +20,9 @@ class MediaCaptureViewModel : ViewModel() {
         )
     }
 
-    fun addMediaItemThumbnail(newMediaItemThumbnail: ImageBitmap) {
+    fun addMediaItemImage(newMediaItemImage: ImageBitmap) {
         _uiState.value = uiState.value.copy(
-            mediaListThumbnail = uiState.value.mediaListThumbnail + newMediaItemThumbnail
+            mediaListImages = uiState.value.mediaListImages + newMediaItemImage
         )
     }
 
