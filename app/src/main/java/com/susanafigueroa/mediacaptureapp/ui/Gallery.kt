@@ -43,7 +43,7 @@ fun GalleryScreen(
                     modifier = Modifier
                         .width(200.dp)
                         .height(300.dp)
-                        .padding(2.dp)
+                        .padding(4.dp)
                         .clickable {
                             mediaSelectedUri = uiState.mediaList[index]
                             mediaSelectedUri?.let{uri ->

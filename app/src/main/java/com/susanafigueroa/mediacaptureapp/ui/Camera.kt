@@ -106,7 +106,6 @@ fun CameraScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
 
         AndroidView(
