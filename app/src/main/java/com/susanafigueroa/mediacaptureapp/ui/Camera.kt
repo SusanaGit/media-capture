@@ -80,8 +80,9 @@ fun CameraScreen(
     var videoCapture by remember { mutableStateOf<VideoCapture<Recorder>?>(null) }
     var recording by remember { mutableStateOf<Recording?>(null) }
 
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val imageBitmap: ImageBitmap? = imageUri?.let { uri ->
+    var referenceUri by remember { mutableStateOf<Uri?>(null) }
+
+    val imageBitmap: ImageBitmap? = referenceUri?.let { uri ->
         if (uri.toString().contains("image")) {
             obtainBitmapFromUri(context, uri)
         } else {
@@ -89,10 +90,15 @@ fun CameraScreen(
         }
     }
 
-    LaunchedEffect(imageUri) {
-        imageUri?.let {
+    LaunchedEffect(referenceUri) {
+        referenceUri?.let {uri ->
+
+            imageBitmap?.let {bitmap ->
+                viewModel.addMediaItemThumbnail(bitmap)
+            }
+
             delay(2000)
-            imageUri = null
+            referenceUri = null
         }
     }
 
@@ -116,6 +122,7 @@ fun CameraScreen(
             modifier = Modifier.fillMaxSize()
         )
 
+
         imageBitmap?.let { bitmap ->
             Image(
                 bitmap = bitmap,
@@ -126,8 +133,6 @@ fun CameraScreen(
                     .align(Alignment.Center),
                 contentScale = ContentScale.Crop
             )
-
-            viewModel.addMediaItemThumbnail(bitmap)
         }
 
         Row(
@@ -141,7 +146,7 @@ fun CameraScreen(
                 imageCapture?.let {
                     takePhoto(imageCapture = it, context = context) { uri ->
                         uri?.let {
-                            imageUri = uri
+                            referenceUri = uri
                             viewModel.addMediaItem(uri)
                         }
                     }
@@ -158,7 +163,7 @@ fun CameraScreen(
                     if (recording == null) {
                         recording = recordVideo(it, context) { uri ->
                             uri?.let {
-                                imageUri = uri
+                                referenceUri = uri
                                 viewModel.addMediaItem(uri)
                             }
                         }
@@ -180,12 +185,12 @@ fun CameraScreen(
 
 fun obtainBitmapFromVideoUri(
     context: Context,
-    uri: Uri
+    referenceUri: Uri
 ): ImageBitmap? {
     var bitmapVideoFrame: Bitmap? = null
     val dataVideo = MediaMetadataRetriever()
     try {
-        dataVideo.setDataSource(context, uri)
+        dataVideo.setDataSource(context, referenceUri)
         bitmapVideoFrame = dataVideo.getFrameAtTime(0)
 
     } catch (e: Exception) {
@@ -198,11 +203,11 @@ fun obtainBitmapFromVideoUri(
 
 fun obtainBitmapFromUri(
     context: Context,
-    uri: Uri
+    referenceUri: Uri
 ): ImageBitmap? {
     var bitmapPhoto: Bitmap? = null
     try {
-        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        val inputStream: InputStream? = context.contentResolver.openInputStream(referenceUri)
         bitmapPhoto = BitmapFactory.decodeStream(inputStream)
         inputStream?.close()
 
