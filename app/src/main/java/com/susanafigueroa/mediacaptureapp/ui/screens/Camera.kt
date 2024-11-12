@@ -107,8 +107,7 @@ fun CameraScreen(
     var zoom by remember { mutableStateOf(ZoomLevel.X1) }
     var camera by remember { mutableStateOf<Camera?>(null) }
 
-    val isZoomX1: Boolean = zoom == ZoomLevel.X1
-    val isZoomX2: Boolean = zoom == ZoomLevel.X2
+    var isZoomX1 by remember { mutableStateOf(true) }
 
     var isFlashEnabled by remember { mutableStateOf(false) }
 
@@ -183,7 +182,9 @@ fun CameraScreen(
         ) {
 
             Button(
-                onClick = { zoom = ZoomLevel.X1 },
+                onClick = {
+                    zoom = ZoomLevel.X1
+                    isZoomX1 = true},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isZoomX1) Color.LightGray else MaterialTheme.colorScheme.primary
                 ),
@@ -218,9 +219,11 @@ fun CameraScreen(
             }
 
             Button(
-                onClick = { zoom = ZoomLevel.X2 },
+                onClick = {
+                    zoom = ZoomLevel.X2
+                    isZoomX1 = false},
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isZoomX2) Color.LightGray else MaterialTheme.colorScheme.primary
+                    containerColor = if (!isZoomX1) Color.LightGray else MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
                     .padding(5.dp)
