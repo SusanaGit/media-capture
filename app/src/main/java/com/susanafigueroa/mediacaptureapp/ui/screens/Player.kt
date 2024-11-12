@@ -11,12 +11,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.susanafigueroa.mediacaptureapp.R
 
 @Composable
 fun PlayerScreen(
@@ -26,17 +28,17 @@ fun PlayerScreen(
     val uiState by viewModel.uiState.collectAsState()
     val mediaSelectedUri = uiState.mediaSelectedUri
 
-    if (mediaSelectedUri.toString().contains("image")) {
+    if (mediaSelectedUri.toString().contains(stringResource(R.string.image))) {
 
         Image(
             painter = rememberAsyncImagePainter(mediaSelectedUri),
-            contentDescription = "Selected image",
+            contentDescription = stringResource(R.string.selected_image),
             modifier = Modifier
                 .fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
-    } else if (mediaSelectedUri.toString().contains("video")){
+    } else if (mediaSelectedUri.toString().contains(stringResource(R.string.video))){
 
         val context = LocalContext.current
 
