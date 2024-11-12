@@ -1,4 +1,4 @@
-package com.susanafigueroa.mediacaptureapp
+package com.susanafigueroa.mediacaptureapp.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
@@ -22,10 +22,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.susanafigueroa.mediacaptureapp.ui.theme.screens.CameraScreen
-import com.susanafigueroa.mediacaptureapp.ui.theme.screens.GalleryScreen
-import com.susanafigueroa.mediacaptureapp.ui.theme.screens.MediaCaptureViewModel
-import com.susanafigueroa.mediacaptureapp.ui.theme.screens.PlayerScreen
+import com.susanafigueroa.mediacaptureapp.R
+import com.susanafigueroa.mediacaptureapp.ui.screens.CameraScreen
+import com.susanafigueroa.mediacaptureapp.ui.screens.GalleryScreen
+import com.susanafigueroa.mediacaptureapp.ui.screens.MediaCaptureViewModel
+import com.susanafigueroa.mediacaptureapp.ui.screens.PlayerScreen
 
 enum class MediaCaptureScreen(@StringRes val title: Int) {
     Gallery(title = R.string.gallery),

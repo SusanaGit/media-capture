@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.susanafigueroa.mediacaptureapp.ui.MediaCaptureApp
 import com.susanafigueroa.mediacaptureapp.ui.theme.MediaCaptureAppTheme
 
 

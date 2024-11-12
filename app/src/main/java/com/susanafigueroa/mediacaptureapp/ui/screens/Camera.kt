@@ -1,4 +1,4 @@
-package com.susanafigueroa.mediacaptureapp.ui.theme.screens
+package com.susanafigueroa.mediacaptureapp.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
