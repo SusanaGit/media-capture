@@ -1,4 +1,4 @@
-package com.susanafigueroa.mediacaptureapp.ui
+package com.susanafigueroa.mediacaptureapp.ui.theme.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

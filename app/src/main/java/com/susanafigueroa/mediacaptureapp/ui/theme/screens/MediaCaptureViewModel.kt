@@ -1,7 +1,6 @@
-package com.susanafigueroa.mediacaptureapp.ui
+package com.susanafigueroa.mediacaptureapp.ui.theme.screens
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import com.susanafigueroa.mediacaptureapp.data.AppUiState

@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PermissionHandler() {
     val context = LocalContext.current
-
     val requiredPermissions = listOf(
         Manifest.permission.CAMERA,
         Manifest.permission.RECORD_AUDIO
@@ -57,7 +56,6 @@ fun PermissionHandler() {
     }
 
     var allPermissionsTrue by remember { mutableStateOf(checkValuePermissions()) }
-
     val launcherForPermissions = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             allPermissionsTrue = permissions.values.all { it }
