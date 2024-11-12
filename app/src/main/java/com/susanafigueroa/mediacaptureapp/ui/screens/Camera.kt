@@ -82,26 +82,26 @@ fun CameraScreen(
     var recording by remember { mutableStateOf<Recording?>(null) }
 
     var referenceUri by remember { mutableStateOf<Uri?>(null) }
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 
-    val imageBitmap: ImageBitmap? = referenceUri?.let { uri ->
-        if (uri.toString().contains("image")) {
-            obtainBitmapFromUri(context, uri)
-        } else if (uri.toString().contains("video")){
-            obtainBitmapFromVideoUri(context,uri)
-        } else {
-            null
-        }
-    }
+    var thumbnailVisible by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(referenceUri) {
-        referenceUri?.let {
+        referenceUri?.let {uri ->
+            if (uri.toString().contains("image")) {
+                imageBitmap = obtainBitmapFromUri(context, uri)
+            } else if (uri.toString().contains("video")){
+                imageBitmap = obtainBitmapFromVideoUri(context,uri)
+            }
 
             imageBitmap?.let {bitmap ->
                 viewModel.addMediaItemImage(bitmap)
+                thumbnailVisible = true
             }
 
-            delay(2000)
-            referenceUri = null
+            delay(1000)
+            thumbnailVisible = false
         }
     }
 
@@ -124,17 +124,18 @@ fun CameraScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-
-        imageBitmap?.let { bitmap ->
-            Image(
-                bitmap = bitmap,
-                contentDescription = stringResource(R.string.photo_thumbnail),
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(300.dp)
-                    .align(Alignment.Center),
-                contentScale = ContentScale.Crop
-            )
+        if (thumbnailVisible) {
+            imageBitmap?.let { bitmap ->
+                Image(
+                    bitmap = bitmap,
+                    contentDescription = stringResource(R.string.photo_thumbnail),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(300.dp)
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         Row(
