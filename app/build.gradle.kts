@@ -84,4 +84,8 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-hls:$exoplayer_version")
     implementation("com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayer_version")
     implementation("com.google.android.exoplayer:exoplayer-rtsp:$exoplayer_version")
+
+    val coil_version = "2.4.0"
+    implementation("io.coil-kt:coil-compose:$coil_version")
+
 }

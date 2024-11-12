@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import coil.compose.rememberAsyncImagePainter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
@@ -27,13 +28,11 @@ fun PlayerScreen(
 
     if (mediaSelectedUri.toString().contains("image")) {
 
-        val mediaList = uiState.mediaList
-        val mediaListImages = uiState.mediaListImages
-        val index = mediaList.indexOf(mediaSelectedUri)
-
         Image(
-            bitmap = mediaListImages[index],
+            painter = rememberAsyncImagePainter(mediaSelectedUri),
             contentDescription = "Selected image",
+            modifier = Modifier
+                .fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
