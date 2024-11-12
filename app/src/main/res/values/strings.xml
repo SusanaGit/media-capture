@@ -23,4 +23,6 @@
     <string name="image">image</string>
     <string name="x1">X1</string>
     <string name="x2">X2</string>
+    <string name="flash_off">flash off</string>
+    <string name="flash_on">flash on</string>
 </resources>
