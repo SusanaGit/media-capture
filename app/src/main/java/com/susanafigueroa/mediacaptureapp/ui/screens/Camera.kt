@@ -86,8 +86,10 @@ fun CameraScreen(
     val imageBitmap: ImageBitmap? = referenceUri?.let { uri ->
         if (uri.toString().contains("image")) {
             obtainBitmapFromUri(context, uri)
-        } else {
+        } else if (uri.toString().contains("video")){
             obtainBitmapFromVideoUri(context,uri)
+        } else {
+            null
         }
     }
 
