@@ -21,4 +21,6 @@
     <string name="selected_image">Selected image</string>
     <string name="video">video</string>
     <string name="image">image</string>
+    <string name="x1">X1</string>
+    <string name="x2">X2</string>
 </resources>

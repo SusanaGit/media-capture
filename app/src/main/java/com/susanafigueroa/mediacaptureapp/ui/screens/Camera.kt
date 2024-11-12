@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -68,6 +69,11 @@ private data class CameraUseCases(
     val videoCapture: VideoCapture<Recorder>
 )
 
+enum class ZoomLevel(val factor: Float) {
+    X1(0f),
+    X2(0.6f),
+}
+
 @Composable
 fun CameraScreen(
     viewModel: MediaCaptureViewModel
@@ -85,6 +91,8 @@ fun CameraScreen(
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 
     var thumbnailVisible by remember { mutableStateOf(false) }
+    var zoom by remember { mutableStateOf(ZoomLevel.X1) }
+    var camera by remember { mutableStateOf<Camera?>(null) }
 
 
     LaunchedEffect(referenceUri) {
@@ -105,6 +113,10 @@ fun CameraScreen(
         }
     }
 
+    LaunchedEffect(zoom) {
+        camera?.cameraControl?.setLinearZoom(zoom.factor)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -115,9 +127,10 @@ fun CameraScreen(
                 val previewView = PreviewView(contextFactory)
 
                 coroutineScope.launch {
-                    val cameraProvider = startCamera(context, previewView, lifecycleOwner)
-                    imageCapture = cameraProvider.imageCapture
-                    videoCapture = cameraProvider.videoCapture
+                    val (cameraUseCases, cameraObject) = startCamera(context, previewView, lifecycleOwner, zoom)
+                    imageCapture = cameraUseCases.imageCapture
+                    videoCapture = cameraUseCases.videoCapture
+                    camera = cameraObject
                 }
                 previewView
             },
@@ -140,10 +153,24 @@ fun CameraScreen(
 
         Row(
             modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = { zoom = ZoomLevel.X1 }) {
+                Text(text = stringResource(R.string.x1))
+            }
+            Button(onClick = { zoom = ZoomLevel.X2 }) {
+                Text(text = stringResource(R.string.x2))
+            }
+        }
+
+        Row(
+            modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
             Button(
                 onClick = {
 
@@ -319,8 +346,9 @@ fun takePhoto(
 private suspend fun startCamera(
     context: Context,
     previewView: PreviewView,
-    lifecycleOwner: LifecycleOwner
-): CameraUseCases {
+    lifecycleOwner: LifecycleOwner,
+    zoom: ZoomLevel
+): Pair<CameraUseCases, androidx.camera.core.Camera> {
     val cameraProvider = context.getCameraProvider()
 
     val preview = Preview.Builder().build().apply {
@@ -338,9 +366,11 @@ private suspend fun startCamera(
 
     cameraProvider.unbindAll()
 
-    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture, videoCapture)
+    val camera = cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture, videoCapture)
 
-    return CameraUseCases(imageCapture, videoCapture)
+    camera.cameraControl.setLinearZoom(zoom.factor)
+
+    return Pair(CameraUseCases(imageCapture, videoCapture), camera)
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider =
