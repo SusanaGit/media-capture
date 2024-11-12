@@ -134,6 +134,14 @@ fun CameraScreen(
         camera?.cameraControl?.setLinearZoom(zoom.factor)
     }
 
+    LaunchedEffect(isFlashEnabled) {
+        imageCapture?.flashMode = if (isFlashEnabled) {
+            ImageCapture.FLASH_MODE_ON
+        } else {
+            ImageCapture.FLASH_MODE_OFF
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -144,7 +152,7 @@ fun CameraScreen(
                 val previewView = PreviewView(contextFactory)
 
                 coroutineScope.launch {
-                    val (cameraUseCases, cameraObject) = startCamera(context, previewView, lifecycleOwner, zoom)
+                    val (cameraUseCases, cameraObject) = startCamera(context, previewView, lifecycleOwner, zoom, isFlashEnabled)
                     imageCapture = cameraUseCases.imageCapture
                     videoCapture = cameraUseCases.videoCapture
                     camera = cameraObject
@@ -405,15 +413,18 @@ private suspend fun startCamera(
     context: Context,
     previewView: PreviewView,
     lifecycleOwner: LifecycleOwner,
-    zoom: ZoomLevel
-): Pair<CameraUseCases, androidx.camera.core.Camera> {
+    zoom: ZoomLevel,
+    isFlashEnabled: Boolean
+): Pair<CameraUseCases, Camera> {
     val cameraProvider = context.getCameraProvider()
 
     val preview = Preview.Builder().build().apply {
         setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    val imageCapture = ImageCapture.Builder().build()
+    val imageCapture = ImageCapture.Builder()
+        .setFlashMode(if (isFlashEnabled) ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF)
+        .build()
 
     val recorder = Recorder.Builder()
         .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
