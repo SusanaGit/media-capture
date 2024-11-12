@@ -35,6 +35,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -94,6 +97,8 @@ fun CameraScreen(
     var zoom by remember { mutableStateOf(ZoomLevel.X1) }
     var camera by remember { mutableStateOf<Camera?>(null) }
 
+    val isZoomX1: Boolean = zoom == ZoomLevel.X1
+    val isZoomX2: Boolean = zoom == ZoomLevel.X2
 
     LaunchedEffect(referenceUri) {
         referenceUri?.let {uri ->
@@ -156,10 +161,25 @@ fun CameraScreen(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = { zoom = ZoomLevel.X1 }) {
+
+            Button(
+                onClick = { zoom = ZoomLevel.X1 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isZoomX1) Color.LightGray else MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .padding(5.dp)
+            ) {
                 Text(text = stringResource(R.string.x1))
             }
-            Button(onClick = { zoom = ZoomLevel.X2 }) {
+            Button(
+                onClick = { zoom = ZoomLevel.X2 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isZoomX2) Color.LightGray else MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .padding(5.dp)
+            ) {
                 Text(text = stringResource(R.string.x2))
             }
         }
